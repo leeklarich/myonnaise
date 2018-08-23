@@ -1,23 +1,104 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:animateLayoutChanges="true"
+
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:animateLayoutChanges="true">
 
-    <TextView
-        android:id="@+id/text_empty_graph"
-        style="@style/TextAppearance.AppCompat.Body1"
-        android:text="@string/start_a_streaming_nto_populate_the_graph"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:gravity="center"
-        android:visibility="invisible"
-        android:layout_marginTop="100dp" />
+    <FrameLayout
 
-    <com.ncorti.myonnaise.sensorgraphview.SensorGraphView
-        android:id="@+id/sensor_graph_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:layout_marginLeft="500dp">
+
+        <TextView
+            android:id="@+id/timeLeft"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="Time Left:"
+            android:textSize="36sp" />
+
+        <Button
+            android:id="@+id/repeat"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|right"
+            android:layout_marginRight="40dp"
+            android:text="Stop"
+            style="@style/Widget.MaterialComponents.Button"
+
+            android:layout_margin="@dimen/default_margin"/>
+
+        <Button
+            android:id="@+id/start"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|left"
+            android:layout_marginLeft="40dp"
+            android:text="Start"
+            style="@style/Widget.MaterialComponents.Button"
+
+            android:layout_margin="@dimen/default_margin"/>
+
+        <Button
+            android:id="@+id/save"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|center_horizontal"
+            android:text="Save &amp; Upload"
+            style="@style/Widget.MaterialComponents.Button"
+
+            android:layout_margin="@dimen/default_margin"
+            tools:text="Save" />
+
+        <TextView
+            android:id="@+id/points_count"
+            style="@style/TextAppearance.AppCompat.Headline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="145dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginRight="@dimen/default_margin"
+            android:text="@string/zero"
+            android:textColor="@color/primaryColor"
+            android:layout_gravity="center_horizontal"/>
+        <TextView
+            android:id="@+id/status_text"
+            style="@style/TextAppearance.AppCompat.Headline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/default_margin"
+            android:layout_marginRight="@dimen/default_margin"
+            android:text="Press start when you're ready."
+            android:textColor="@color/primaryColor"
+            android:layout_gravity="center_horizontal|center_vertical"
+            />
+
+    </FrameLayout>
+
+    <FrameLayout
+        android:layout_width="500dp"
+        android:layout_height="match_parent"
+        android:layout_marginRight="700dp">
+
+        <TextView
+            android:id="@+id/text_empty_graph"
+            style="@style/TextAppearance.AppCompat.Body1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="100dp"
+            android:gravity="center"
+            android:text="@string/start_a_streaming_nto_populate_the_graph"
+            android:visibility="invisible"
+            />
+
+        <com.ncorti.myonnaise.sensorgraphview.SensorGraphView
+            android:id="@+id/sensor_graph_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </FrameLayout>
 
 </FrameLayout>

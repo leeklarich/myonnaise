@@ -10,6 +10,8 @@ import android.widget.Toast
 import dagger.android.support.AndroidSupportInjection
 import it.ncorti.emgvisualizer.BaseFragment
 import it.ncorti.emgvisualizer.R
+
+import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.layout_control_device.*
 import javax.inject.Inject
 
@@ -40,19 +42,6 @@ class ControlDeviceFragment : BaseFragment<ControlDeviceContract.Presenter>(), C
         super.onViewCreated(view, savedInstanceState)
 
         button_connect.setOnClickListener { controlDevicePresenter.onConnectionToggleClicked() }
-        button_start_streaming.setOnClickListener { controlDevicePresenter.onStreamingToggleClicked() }
-        button_vibrate_1.setOnClickListener { controlDevicePresenter.onVibrateClicked(1) }
-        button_vibrate_2.setOnClickListener { controlDevicePresenter.onVibrateClicked(2) }
-        button_vibrate_3.setOnClickListener { controlDevicePresenter.onVibrateClicked(3) }
-        seekbar_frequency.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                controlDevicePresenter.onProgressSelected(progress)
-            }
-
-            override fun onStartTrackingTouch(p0: SeekBar?) {}
-            override fun onStopTrackingTouch(p0: SeekBar?) {}
-        })
-        seekbar_frequency.isEnabled = false
     }
 
     override fun showDeviceInformation(name: String?, address: String) {
@@ -93,35 +82,5 @@ class ControlDeviceFragment : BaseFragment<ControlDeviceContract.Presenter>(), C
 
     override fun disableConnectButton() {
         button_connect.isEnabled = false
-    }
-
-    override fun disableControlPanel() {
-        button_start_streaming.isEnabled = false
-        button_vibrate_1.isEnabled = false
-        button_vibrate_2.isEnabled = false
-        button_vibrate_3.isEnabled = false
-        seekbar_frequency.isEnabled = false
-    }
-
-    override fun enableControlPanel() {
-        button_start_streaming.isEnabled = true
-        button_vibrate_1.isEnabled = true
-        button_vibrate_2.isEnabled = true
-        button_vibrate_3.isEnabled = true
-        seekbar_frequency.isEnabled = true
-    }
-
-    override fun showStreaming() {
-        button_start_streaming?.text = getText(R.string.stop)
-        device_streaming_status?.text = getString(R.string.currently_streaming)
-    }
-
-    override fun showNotStreaming() {
-        button_start_streaming?.text = getText(R.string.start)
-        device_streaming_status?.text = getString(R.string.not_streaming)
-    }
-
-    override fun showFrequency(frequency: Int) {
-        device_frequency_value.text = getString(R.string.templated_hz, frequency)
     }
 }

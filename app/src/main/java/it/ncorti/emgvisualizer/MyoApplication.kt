@@ -16,7 +16,7 @@ class MyoApplication : Application(), HasActivityInjector {
 
     @Inject
     lateinit var dispatchingAndroidInjector: DispatchingAndroidInjector<Activity>
-
+    var mpOkay: String? = null
 
     companion object {
         @JvmStatic lateinit var applicationComponent : ApplicationComponent

@@ -14,7 +14,25 @@ interface GraphContract {
 
         fun hideNoStreamingMessage()
 
+        fun showCollectedPoints(totalPoints: Int)
+
+        fun saveCsvFile(content: String)
+
         fun showNoStreamingMessage()
+
+        fun enableStartButton()
+
+        fun disableStartButton()
+
+        fun enableSaveButton()
+
+        fun disableSaveButton()
+
+        fun enableRepeatButton()
+
+        fun disableRepeatButton()
+
+        fun setStatusText(text: String)
     }
 
     abstract class Presenter(override val view: BaseView) : BasePresenter<BaseView>(view)

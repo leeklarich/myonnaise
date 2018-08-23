@@ -48,12 +48,10 @@ class ControlDevicePresenter(
                                         view.showConnecting()
                                     }
                                     MyoStatus.READY -> {
-                                        view.enableControlPanel()
                                     }
                                     else -> {
                                         view.hideConnectionProgress()
                                         view.showDisconnected()
-                                        view.disableControlPanel()
                                     }
                                 }
                             }
@@ -62,11 +60,7 @@ class ControlDevicePresenter(
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe {
-                                if (it == MyoControlStatus.STREAMING) {
-                                    view.showStreaming()
-                                } else {
-                                    view.showNotStreaming()
-                                }
+
                             }
         }
     }
@@ -95,32 +89,4 @@ class ControlDevicePresenter(
             }
         }
     }
-
-    override fun onVibrateClicked(duration: Int) {
-        deviceManager.myo?.apply {
-            this.sendCommand(when (duration) {
-                1 -> CommandList.vibration1()
-                2 -> CommandList.vibration2()
-                else -> CommandList.vibration3()
-            })
-        }
-    }
-
-    override fun onProgressSelected(progress: Int) {
-        val selectedFrequency = when (progress) {
-            0 -> 1
-            1 -> 2
-            2 -> 5
-            3 -> 10
-            4 -> 25
-            5 -> 50
-            6 -> 100
-            else -> MYO_MAX_FREQUENCY
-        }
-        view.showFrequency(selectedFrequency)
-        deviceManager.myo?.apply {
-            this.frequency = selectedFrequency
-        }
-    }
-
 }

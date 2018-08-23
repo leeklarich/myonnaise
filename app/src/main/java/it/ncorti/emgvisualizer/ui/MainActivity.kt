@@ -1,7 +1,5 @@
 package it.ncorti.emgvisualizer.ui
 
-import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
@@ -15,14 +13,11 @@ import dagger.android.DispatchingAndroidInjector
 import dagger.android.support.HasSupportFragmentInjector
 import it.ncorti.emgvisualizer.R
 import it.ncorti.emgvisualizer.ui.control.ControlDeviceFragment
-import it.ncorti.emgvisualizer.ui.export.ExportFragment
 import it.ncorti.emgvisualizer.ui.graph.GraphFragment
 import it.ncorti.emgvisualizer.ui.scan.ScanDeviceFragment
 import kotlinx.android.synthetic.main.activity_main.*
 import javax.inject.Inject
 
-private const val PREFS_GLOBAL = "global"
-private const val KEY_COMPLETED_ONBOARDING = "completed_onboarding"
 
 class MainActivity : AppCompatActivity(), HasSupportFragmentInjector {
 
@@ -37,21 +32,13 @@ class MainActivity : AppCompatActivity(), HasSupportFragmentInjector {
         AndroidInjection.inject(this)
         super.onCreate(savedInstanceState)
 
-        // Checking if we should on-board the user the first time.
-        val prefs = getSharedPreferences(PREFS_GLOBAL, Context.MODE_PRIVATE)
-        if (!prefs.getBoolean(KEY_COMPLETED_ONBOARDING, false)) {
-            finish()
-            startActivity(Intent(this, IntroActivity::class.java))
-        }
-
         setContentView(R.layout.activity_main)
         setSupportActionBar(findViewById(R.id.new_toolbar))
 
         val fragmentList = listOf<Fragment>(
                 ScanDeviceFragment.newInstance(),
                 ControlDeviceFragment.newInstance(),
-                GraphFragment.newInstance(),
-                ExportFragment.newInstance()
+                GraphFragment.newInstance()
         )
 
         view_pager.adapter = MyAdapter(supportFragmentManager, fragmentList)
@@ -78,7 +65,6 @@ class MainActivity : AppCompatActivity(), HasSupportFragmentInjector {
                 R.id.item_scan -> view_pager.currentItem = 0
                 R.id.item_control -> view_pager.currentItem = 1
                 R.id.item_graph -> view_pager.currentItem = 2
-                R.id.item_export -> view_pager.currentItem = 3
             }
             false
         }

@@ -6,14 +6,6 @@
     android:orientation="vertical">
 
     <TextView
-        style="@style/TextAppearance.AppCompat.Subhead"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/default_margin"
-        android:text="@string/export_points"
-        android:textColor="@color/primaryColor" />
-
-    <TextView
         android:id="@+id/points_count"
         style="@style/TextAppearance.AppCompat.Headline"
         android:layout_width="wrap_content"
@@ -22,15 +14,6 @@
         android:layout_marginRight="@dimen/default_margin"
         android:text="@string/zero"
         android:textColor="@color/primaryColor" />
-
-    <TextView
-        android:id="@+id/points_count_subtitle"
-        style="@style/TextAppearance.AppCompat.Caption"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/default_margin"
-        android:layout_marginEnd="@dimen/default_margin"
-        android:text="@string/points_to_export" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/button_start_collecting"
@@ -71,17 +54,6 @@
         android:layout_marginStart="@dimen/default_margin"
         android:layout_marginEnd="@dimen/default_margin"
         android:text="@string/save_info_message"
-        android:visibility="invisible" />
-
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/button_share"
-        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/default_margin"
-        android:layout_marginTop="@dimen/default_margin"
-        android:layout_marginRight="@dimen/default_margin"
-        android:text="@string/share"
         android:visibility="invisible" />
 
     <com.google.android.material.button.MaterialButton

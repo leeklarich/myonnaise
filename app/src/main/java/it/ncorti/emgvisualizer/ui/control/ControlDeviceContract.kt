@@ -25,16 +25,6 @@ interface ControlDeviceContract {
         fun enableConnectButton()
 
         fun disableConnectButton()
-
-        fun enableControlPanel()
-
-        fun disableControlPanel()
-
-        fun showStreaming()
-
-        fun showNotStreaming()
-
-        fun showFrequency(frequency: Int)
     }
 
     abstract class Presenter(override val view: BaseView) : BasePresenter<BaseView>(view) {
@@ -42,10 +32,6 @@ interface ControlDeviceContract {
         abstract fun onConnectionToggleClicked()
 
         abstract fun onStreamingToggleClicked()
-
-        abstract fun onVibrateClicked(duration: Int)
-
-        abstract fun onProgressSelected(progress: Int)
 
     }
 }
