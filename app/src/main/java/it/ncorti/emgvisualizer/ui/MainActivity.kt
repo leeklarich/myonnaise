@@ -20,8 +20,7 @@ import it.ncorti.emgvisualizer.ui.scan.ScanDeviceFragment
 import kotlinx.android.synthetic.main.activity_main.*
 import javax.inject.Inject
 import android.R.attr.y
-
-
+import com.google.firebase.database.FirebaseDatabase
 
 
 class MainActivity: AppCompatActivity(), HasSupportFragmentInjector{
@@ -39,7 +38,7 @@ class MainActivity: AppCompatActivity(), HasSupportFragmentInjector{
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this)
         super.onCreate(savedInstanceState)
-
+        FirebaseDatabase.getInstance().setPersistenceEnabled(true)
 
         setContentView(R.layout.activity_main)
         setSupportActionBar(findViewById(R.id.new_toolbar))
