@@ -1,19 +1,23 @@
 package com.ncorti.myonnaise.sensorgraphview
 
+import android.content.ContentValues.TAG
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.util.AttributeSet
+import android.util.Log
 import android.view.View
 import androidx.core.content.ContextCompat
 
 /** Default point circle size  */
 private const val CIRCLE_SIZE_DEFAULT = 3
 /** Now drawing point circle size  */
-private const val CIRCLE_SIZE_ACTUAL = 20
+// changed to be a smaller circle, too large for small data
+private const val CIRCLE_SIZE_ACTUAL = 3
 /** Graph size  */
-private const val MAX_DATA_SIZE = 150
+//changed to persist data to the display longer
+private const val MAX_DATA_SIZE = 1000
 
 class SensorGraphView(context: Context, attrs: AttributeSet) : View(context, attrs) {
 
@@ -32,9 +36,6 @@ class SensorGraphView(context: Context, attrs: AttributeSet) : View(context, att
 
     val spread: Float
         get() = maxValue - minValue
-
-    private val zeroLine: Float
-        get() = (0 - minValue) / spread
 
     /** Paint brush for drawing samples  */
     private val rectPaints = arrayListOf<Paint>()
@@ -86,7 +87,9 @@ class SensorGraphView(context: Context, attrs: AttributeSet) : View(context, att
 
     fun addPoint(points: FloatArray) {
         for (i in 0 until channels) {
-            this.normalizedPoints[i][currentIndex] = (points[i] - minValue)/spread
+
+            // the added value spreads the channels apart
+            this.normalizedPoints[i][currentIndex] = ((points[i] - minValue)/spread)+((i+1)*.12f)
         }
         currentIndex = (currentIndex + 1) % MAX_DATA_SIZE
         invalidate()
@@ -97,9 +100,6 @@ class SensorGraphView(context: Context, attrs: AttributeSet) : View(context, att
 
         val height = height
         val width = width
-
-        val zeroLine = height - height * zeroLine
-        canvas.drawLine(0f, zeroLine, width.toFloat(), zeroLine, infoPaint)
 
         if (normalizedPoints.isEmpty()) {
             return
@@ -114,19 +114,24 @@ class SensorGraphView(context: Context, attrs: AttributeSet) : View(context, att
         for (i in 0 until channels) {
             var currentX = pointSpan
 
+            // modified to only draw every nth
             for (j in 0 until MAX_DATA_SIZE) {
-                val y = height - height * normalizedPoints[i][j]
-                if (previousX != -1f && previousY != -1f) {
-                    canvas.drawLine(previousX, previousY, currentX, y, rectPaints[i])
-                }
-                if (j == (currentIndex - 1) % MAX_DATA_SIZE) {
-                    canvas.drawCircle(currentX, y, CIRCLE_SIZE_ACTUAL.toFloat(), infoPaint)
-                    previousX = -1f
-                    previousY = -1f
-                } else {
-                    canvas.drawCircle(currentX, y, CIRCLE_SIZE_DEFAULT.toFloat(), rectPaints[i])
-                    previousX = currentX
-                    previousY = y
+                if(j%5 == 0) {
+                    // the + 250f shifts it so the first line is near the bottom
+                    val y = (height - height * normalizedPoints[i][j]) + 320f
+                    if (previousX != -1f && previousY != -1f) {
+                        canvas.drawLine(previousX, previousY, currentX, y, rectPaints[i])
+                    }
+                    if (j == (currentIndex - 1) % MAX_DATA_SIZE) {
+                        canvas.drawCircle(currentX, y, CIRCLE_SIZE_ACTUAL.toFloat(), infoPaint)
+                        previousX = -1f
+                        previousY = -1f
+                    } else {
+                        canvas.drawCircle(currentX, y, CIRCLE_SIZE_DEFAULT.toFloat(), rectPaints[i])
+                        previousX = currentX
+                        previousY = y
+                    }
+
                 }
                 currentX += pointSpan
             }

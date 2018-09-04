@@ -10,10 +10,6 @@ interface ControlDeviceContract {
 
         fun showDeviceInformation(name: String?, address: String)
 
-        fun showConnectionProgress()
-
-        fun hideConnectionProgress()
-
         fun showConnected()
 
         fun showDisconnected()

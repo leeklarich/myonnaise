@@ -38,6 +38,9 @@ dependencies {
     implementation Libs.androidXRecyclerView
     implementation Libs.materialComponents
 
+    implementation 'com.google.firebase:firebase-storage:11.8.0'
+    implementation 'com.google.firebase:firebase-auth:11.8.0'
+    implementation 'com.google.firebase:firebase-database:11.8.0'
     testImplementation Libs.junit
     testImplementation Libs.mockitoCore
     testImplementation Libs.mockitoKotlin
@@ -53,3 +56,7 @@ dependencies {
     implementation Libs.appIntro
     implementation 'com.android.support.constraint:constraint-layout:1.1.2'
 }
+
+
+
+apply plugin: 'com.google.gms.google-services'

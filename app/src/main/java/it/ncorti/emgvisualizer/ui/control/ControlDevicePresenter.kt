@@ -1,5 +1,6 @@
 package it.ncorti.emgvisualizer.ui.control
 
+import com.google.firebase.database.FirebaseDatabase
 import com.ncorti.myonnaise.*
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
@@ -18,6 +19,8 @@ class ControlDevicePresenter(
     override fun create() {}
 
     override fun start() {
+        val database = FirebaseDatabase.getInstance().reference
+        database.child("users")
         if (deviceManager.selectedIndex == -1) {
             view.disableConnectButton()
             return
@@ -40,17 +43,15 @@ class ControlDevicePresenter(
                             .subscribe {
                                 when (it) {
                                     MyoStatus.CONNECTED -> {
-                                        view.hideConnectionProgress()
+
                                         view.showConnected()
                                     }
                                     MyoStatus.CONNECTING -> {
-                                        view.showConnectionProgress()
                                         view.showConnecting()
                                     }
                                     MyoStatus.READY -> {
                                     }
                                     else -> {
-                                        view.hideConnectionProgress()
                                         view.showDisconnected()
                                     }
                                 }
@@ -89,4 +90,6 @@ class ControlDevicePresenter(
             }
         }
     }
+
+
 }

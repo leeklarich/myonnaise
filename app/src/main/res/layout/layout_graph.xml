@@ -10,7 +10,60 @@
 
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginLeft="500dp">
+        android:layout_marginLeft="800dp">
+
+        <TextView
+            android:id="@+id/timeFirebase"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="6"
+            android:visibility="invisible"
+            android:textSize="36sp" />
+
+        <TextView
+            android:id="@+id/userNameFirebase"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text=""
+            android:visibility="invisible"
+            android:textSize="36sp" />
+
+        <TextView
+            android:id="@+id/uuidFirebase"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text=""
+            android:visibility="invisible"
+            android:textSize="36sp" />
+
+        <TextView
+            android:id="@+id/taskNameFirebase"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text=""
+            android:visibility="invisible"
+            android:textSize="36sp" />
+        <TextView
+            android:id="@+id/sessionsFirebase"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text=""
+            android:visibility="invisible"
+            android:textSize="36sp" />
+        <TextView
+            android:id="@+id/taskHandFirebase"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text=""
+            android:visibility="invisible"
+            android:textSize="36sp" />
+
 
         <TextView
             android:id="@+id/timeLeft"
@@ -21,7 +74,7 @@
             android:textSize="36sp" />
 
         <Button
-            android:id="@+id/repeat"
+            android:id="@+id/stopButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|right"
@@ -79,9 +132,9 @@
     </FrameLayout>
 
     <FrameLayout
-        android:layout_width="500dp"
+        android:layout_width="800dp"
         android:layout_height="match_parent"
-        android:layout_marginRight="700dp">
+        android:layout_marginRight="400dp">
 
         <TextView
             android:id="@+id/text_empty_graph"
@@ -96,7 +149,7 @@
             />
 
         <com.ncorti.myonnaise.sensorgraphview.SensorGraphView
-            android:id="@+id/sensor_graph_view"
+            android:id="@+id/sensor_graph_view1"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
     </FrameLayout>

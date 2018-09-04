@@ -2,6 +2,7 @@ package it.ncorti.emgvisualizer
 
 import android.app.Activity
 import android.app.Application
+import com.google.firebase.auth.FirebaseAuth
 import dagger.android.AndroidInjector
 import dagger.android.HasActivityInjector
 import it.ncorti.emgvisualizer.dagger.ApplicationComponent
@@ -24,6 +25,8 @@ class MyoApplication : Application(), HasActivityInjector {
 
     override fun onCreate() {
         super.onCreate()
+
+
         applicationComponent = DaggerApplicationComponent
                 .builder()
                 .contextModule(ContextModule(applicationContext))

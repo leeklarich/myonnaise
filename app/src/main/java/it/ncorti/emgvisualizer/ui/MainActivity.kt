@@ -2,11 +2,13 @@ package it.ncorti.emgvisualizer.ui
 
 import android.os.Bundle
 import android.view.MenuItem
+import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
 import androidx.viewpager.widget.ViewPager
+import com.google.firebase.auth.FirebaseAuth
 import dagger.android.AndroidInjection
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
@@ -17,9 +19,12 @@ import it.ncorti.emgvisualizer.ui.graph.GraphFragment
 import it.ncorti.emgvisualizer.ui.scan.ScanDeviceFragment
 import kotlinx.android.synthetic.main.activity_main.*
 import javax.inject.Inject
+import android.R.attr.y
 
 
-class MainActivity : AppCompatActivity(), HasSupportFragmentInjector {
+
+
+class MainActivity: AppCompatActivity(), HasSupportFragmentInjector{
 
     @Inject
     lateinit var fragmentDispatchingAndroidInjector: DispatchingAndroidInjector<Fragment>
@@ -28,9 +33,13 @@ class MainActivity : AppCompatActivity(), HasSupportFragmentInjector {
         return fragmentDispatchingAndroidInjector
     }
 
+     var userCounter = 0
+     var taskCounter = 0
+
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this)
         super.onCreate(savedInstanceState)
+
 
         setContentView(R.layout.activity_main)
         setSupportActionBar(findViewById(R.id.new_toolbar))
@@ -68,7 +77,20 @@ class MainActivity : AppCompatActivity(), HasSupportFragmentInjector {
             }
             false
         }
+
+
+        val mAuth = FirebaseAuth.getInstance()
+        val currentUser = mAuth.currentUser
+        if (currentUser == null) {
+            //first use
+            mAuth.signInAnonymously().addOnCompleteListener {
+            }
+            return
+        }
+
     }
+
+
 
     fun navigateToPage(pageId: Int) {
         view_pager.currentItem = pageId

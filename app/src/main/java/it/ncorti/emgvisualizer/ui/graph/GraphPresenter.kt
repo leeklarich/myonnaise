@@ -1,18 +1,23 @@
 package it.ncorti.emgvisualizer.ui.graph
 
 import android.content.ContentValues.TAG
+import java.util.Calendar
 import android.util.Log
 import androidx.annotation.VisibleForTesting
 import com.ncorti.myonnaise.CommandList
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
-import it.ncorti.emgvisualizer.MyoApplication
-import it.ncorti.emgvisualizer.MyoApplication_MembersInjector
 import it.ncorti.emgvisualizer.dagger.DeviceManager
 import java.util.ArrayList
 import java.util.concurrent.atomic.AtomicInteger
+import android.media.AudioManager
+import android.media.ToneGenerator
+import java.lang.System.nanoTime
 
+
+val tg = ToneGenerator(AudioManager.STREAM_NOTIFICATION, 100)
+var timeTrial = 3000
 
 class GraphPresenter(
         override val view: GraphContract.View,
@@ -22,20 +27,20 @@ class GraphPresenter(
     private var dataSubscription: Disposable? = null
     private val counter: AtomicInteger = AtomicInteger()
     private val buffer: ArrayList<FloatArray> = arrayListOf()
+    private val timeBuffer: ArrayList<Long> = arrayListOf()
 
 
     override fun create() {
-
     }
 
     override fun start() {
         view.showCollectedPoints(counter.get())
-
     }
 
     override fun stop() {
         view.startGraph(false)
         dataSubscription?.dispose()
+
     }
 
     /*
@@ -47,7 +52,10 @@ class GraphPresenter(
      */
     fun onSavePressed() {
         Log.i(TAG, "save pressed")
-        view.saveCsvFile(createCsv(buffer))
+
+        view.saveCsvFile(createCsv(buffer, timeBuffer))
+        buffer.clear()
+        timeBuffer.clear()
     }
 
     /*
@@ -55,21 +63,16 @@ class GraphPresenter(
     Clear counter
     Call Start
      */
-    fun onRepeatPressed() {
+    fun onStopPressed() {
         view.disableRepeatButton()
         view.enableStartButton()
         view.enableSaveButton()
-        Log.i(TAG, "repeat pressed")
         counter.set(0)
-        buffer.clear()
         view.showCollectedPoints(0)
         dataSubscription?.dispose()
         deviceManager.myo?.apply {
             this.sendCommand(CommandList.stopStreaming())
         }
-        Log.i(TAG, "about to start")
-        Log.i(TAG, "started")
-
     }
 
     /*
@@ -79,55 +82,58 @@ class GraphPresenter(
      */
     fun onStartPressed() {
         var counterVal = 1
-        var takeCount = 8000
-        Log.i(TAG, "start pressed")
+        var startTime = System.currentTimeMillis()
+        buffer.clear() //clears the csv buffer
+        timeBuffer.clear()
         view.disableStartButton()
         view.enableRepeatButton()
         view.disableSaveButton()
+
         deviceManager.myo?.apply {
             if (!this.isStreaming()) {
-                Log.i(TAG, "start streaming")
                 this.sendCommand(CommandList.emgFilteredOnly())
             } else {
                 this.sendCommand(CommandList.stopStreaming())
             }
+
             view.hideNoStreamingMessage()
-            Log.i(TAG, "1")
+
             dataSubscription?.apply {
                 if (!this.isDisposed) this.dispose()
             }
-            Log.i(TAG, "2")
+
             dataSubscription = this.dataFlowable()
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .doOnSubscribe {
                         view.startGraph(true)
-                        Log.i(TAG, "3")
+                        startTime = System.currentTimeMillis()
                     }
 
-                    .take(takeCount.toLong())
                     .doOnComplete {
                         view.setStatusText("Done, press Save to submit trial, press Start to redo.")
                         view.disableRepeatButton()
                         view.enableStartButton()
-                        onRepeatPressed()
+                        onStopPressed()
                     }
                     .subscribe {
                         view.showData(it)
-                        buffer.add(it)
+                        buffer.add(it) //[1, 2, 3, 4, 5, 6, 7, 8] need to add a 103 to the start
+                        timeBuffer.add( System.currentTimeMillis() - startTime)
                         view.showCollectedPoints(counter.incrementAndGet())
-                        view.setStatusText("gucci")
+                        view.setStatusText("")
                         counterVal = counter.get()
                         when {
-                            counterVal < 200 -> view.setStatusText("Starting task in 5")
-                            counterVal < 400 -> view.setStatusText("Starting task in 4")
-                            counterVal < 600 -> view.setStatusText("Starting task in 3")
-                            counterVal < 800 -> view.setStatusText("Starting task in 2")
-                            counterVal < 1000 -> view.setStatusText("Starting task in 1")
-                            counterVal >7000 -> view.setStatusText("Task over, remain still for 5 seconds")
+                            counterVal < 200 -> view.setStatusText("Starting task in 3")
+                            counterVal < 400 -> view.setStatusText("Starting task in 2")
+                            counterVal < 599 -> view.setStatusText("Starting task in 1")
+
+                            counterVal < 600 -> tg.startTone(ToneGenerator.TONE_PROP_BEEP)
+                            counterVal > 1199+(timeTrial) -> onStopPressed()
+                            counterVal > 600+(timeTrial) -> view.setStatusText("Task over, remain still for 3 seconds")
+                            counterVal > 598+(timeTrial) -> tg.startTone(ToneGenerator.TONE_PROP_BEEP2)
                             else -> view.setStatusText("Collecting Data")
                         }
-                        Log.i(TAG, "4")
                     }
         }
 
@@ -135,9 +141,11 @@ class GraphPresenter(
 
 
     @VisibleForTesting
-    internal fun createCsv(buffer: ArrayList<FloatArray>): String {
+    internal fun createCsv(buffer: ArrayList<FloatArray>, timeBuffer: ArrayList<Long>): String {
         val stringBuilder = StringBuilder()
-        buffer.forEach {
+        buffer.forEachIndexed { i, it ->
+            stringBuilder.append(timeBuffer[i])
+            stringBuilder.append(",")
             it.forEach {
                 stringBuilder.append(it)
                 stringBuilder.append(",")
@@ -146,4 +154,13 @@ class GraphPresenter(
         }
         return stringBuilder.toString()
     }
+
+    fun getTrialTime(): Int {
+        return timeTrial
+    }
+
+    fun setTrialTime(seconds: Int) {
+        timeTrial = seconds
+    }
+
 }
