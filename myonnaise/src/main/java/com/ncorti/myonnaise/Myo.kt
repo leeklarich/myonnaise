@@ -266,9 +266,12 @@ class Myo(private val device: BluetoothDevice) : BluetoothGattCallback() {
             val emgData = characteristic.value
             byteReader.byteData = emgData
 
-            // We receive 16 bytes of data. Let's cut them in 2 and deliver both of them.
-            dataProcessor.onNext(byteReader.getBytes(EMG_ARRAY_SIZE / 2))
-            dataProcessor.onNext(byteReader.getBytes(EMG_ARRAY_SIZE / 2))
+            // Make sure there is enough data for a valid reading
+            if(emgData.size >= EMG_ARRAY_SIZE) {
+                // We receive 16 bytes of data. Let's cut them in 2 and deliver both of them.
+                dataProcessor.onNext(byteReader.getBytes(EMG_ARRAY_SIZE / 2))
+                dataProcessor.onNext(byteReader.getBytes(EMG_ARRAY_SIZE / 2))
+            }
         }
 
         // Finally check if keep alive makes sense.

@@ -38,9 +38,9 @@ dependencies {
     implementation Libs.androidXRecyclerView
     implementation Libs.materialComponents
 
-    implementation 'com.google.firebase:firebase-storage:11.8.0'
-    implementation 'com.google.firebase:firebase-auth:11.8.0'
-    implementation 'com.google.firebase:firebase-database:11.8.0'
+    implementation 'com.google.firebase:firebase-storage:19.1.0'
+    implementation 'com.google.firebase:firebase-auth:19.1.0'
+    implementation 'com.google.firebase:firebase-database:19.2.0'
     testImplementation Libs.junit
     testImplementation Libs.mockitoCore
     testImplementation Libs.mockitoKotlin

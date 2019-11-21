@@ -2,6 +2,7 @@ package it.ncorti.emgvisualizer.ui.control
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -46,6 +47,8 @@ class ControlDeviceFragment : BaseFragment<ControlDeviceContract.Presenter>(), C
 
     @Inject
     lateinit var controlDevicePresenter: ControlDevicePresenter
+
+    //private var selectedUser: Int? = 1
 
     override fun onAttach(context: Context?) {
         AndroidSupportInjection.inject(this)
@@ -96,10 +99,12 @@ class ControlDeviceFragment : BaseFragment<ControlDeviceContract.Presenter>(), C
             }
 
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                selectedUser = position
-                loadSpecificUser(myRef, position)
-                (activity as MainActivity).userCounter = position
-
+                if(position != 0) {
+                    selectedUser = position
+                    loadSpecificUser(myRef, position)
+                    (activity as MainActivity).userCounter = position
+                }
+                Log.d("MyoApp onItemSelected", "Selected user: " + position + "\nControlDeviceFrag Focus: " + view_pager?.currentItem)
             }
         }
         select_task.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
@@ -156,7 +161,7 @@ class ControlDeviceFragment : BaseFragment<ControlDeviceContract.Presenter>(), C
                         User("Subject$user_counter")
                 )
                 availableUsers.forEach {
-                    val key = firebaseData.child("subjects").push().key
+                    val key = firebaseData.child("subjects").push().key!!
                     it.uuid = key
                     firebaseData.child("subjects").child(key).setValue(it)
                 }
@@ -175,7 +180,7 @@ class ControlDeviceFragment : BaseFragment<ControlDeviceContract.Presenter>(), C
                         Task("Task$task_counter")
                 )
                 availableTasks.forEach {
-                    val key = firebaseData.child("tasks").push().key
+                    val key = firebaseData.child("tasks").push().key!!
                     it.uuid = key
                     firebaseData.child("tasks").child(key).setValue(it)
                 }
@@ -210,12 +215,11 @@ class ControlDeviceFragment : BaseFragment<ControlDeviceContract.Presenter>(), C
                     }
                 }
 
+                areas.sortWith(compareBy { it.removePrefix("Subject").toInt() })
                 val areaSpinner = select_name
                 val areasAdapter = ArrayAdapter(activity, android.R.layout.simple_spinner_item, areas)
                 areasAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
                 areaSpinner.adapter = areasAdapter
-
-
             }
 
             override fun onCancelled(databaseError: DatabaseError) {

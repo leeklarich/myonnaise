@@ -92,9 +92,9 @@ class GraphPresenter(
         deviceManager.myo?.apply {
             if (!this.isStreaming()) {
                 this.sendCommand(CommandList.emgFilteredOnly())
-            } else {
+            } /**else {
                 this.sendCommand(CommandList.stopStreaming())
-            }
+            }*/
 
             view.hideNoStreamingMessage()
 

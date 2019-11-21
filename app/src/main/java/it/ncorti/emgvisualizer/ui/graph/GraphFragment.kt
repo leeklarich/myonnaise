@@ -6,6 +6,7 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -54,6 +55,8 @@ class GraphFragment : BaseFragment<GraphContract.Presenter>(), GraphContract.Vie
     @Inject
     lateinit var graphPresenter: GraphPresenter
 
+    //private var selectedUser: Int? = null
+    //private var selectedTask: Int? = null
 
     private var fileContentToSave: String? = null
 
@@ -61,7 +64,6 @@ class GraphFragment : BaseFragment<GraphContract.Presenter>(), GraphContract.Vie
         AndroidSupportInjection.inject(this)
         attachPresenter(graphPresenter)
         super.onAttach(context)
-
     }
 
 
@@ -74,17 +76,25 @@ class GraphFragment : BaseFragment<GraphContract.Presenter>(), GraphContract.Vie
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        Log.d("MyoGraphFrag", "onViewCreated called!")
         var myRef = FirebaseDatabase.getInstance().reference
         sensor_graph_view1.channels = MYO_CHANNELS
         sensor_graph_view1.maxValue = MYO_MAX_VALUE*8
         sensor_graph_view1.minValue = MYO_MIN_VALUE*8
+
         var selectedTask = (activity as MainActivity).taskCounter
         var selectedUser = (activity as MainActivity).userCounter
-        stopButton.setOnClickListener { graphPresenter.onStopPressed() }
-        save.setOnClickListener { graphPresenter.onSavePressed() }
+        Log.d("MyoApp selectedUser", "Selected user: " + selectedUser)
+
+        stopButton.setOnClickListener { graphPresenter.onStopPressed()
+            Log.d("MyoApp Stop", "User selected = " + (activity as MainActivity).userCounter) }
+        save.setOnClickListener { graphPresenter.onSavePressed()
+            Log.d("MyoApp Save", "User selected = " + (activity as MainActivity).userCounter) }
         start.setOnClickListener { graphPresenter.onStartPressed()
             getTimeFromFirebaseIndex(myRef, (activity as MainActivity).taskCounter)
-            getUserFromFirebaseIndex(myRef, (activity as MainActivity).userCounter)}
+            Log.d("MyoApp Start 1", "User selected = " + (activity as MainActivity).userCounter)
+            getUserFromFirebaseIndex(myRef, (activity as MainActivity).userCounter)
+            Log.d("MyoApp Start 2", "User selected = " + (activity as MainActivity).userCounter)}
 
 
         val mAuth = FirebaseAuth.getInstance()
@@ -104,7 +114,7 @@ class GraphFragment : BaseFragment<GraphContract.Presenter>(), GraphContract.Vie
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 for ((counter, areaSnapshot) in dataSnapshot.children.withIndex()) {
                     if(counter == index) {
-                        timeFirebase.text= (areaSnapshot.child("time").getValue(String::class.java))
+                        timeFirebase.text = (areaSnapshot.child("time").getValue(String::class.java))
                         graphPresenter.setTrialTime(timeFirebase.text.toString().toInt()*200)
                         taskNameFirebase.text = (areaSnapshot.child("name").getValue(String::class.java))
                         taskHandFirebase.text = (areaSnapshot.child("hand").getValue(String::class.java))
@@ -174,6 +184,7 @@ class GraphFragment : BaseFragment<GraphContract.Presenter>(), GraphContract.Vie
     }
 
     override fun saveCsvFile(content: String) {
+        Log.d("MyoApp saveCSV START", "Selected user: " + (activity as MainActivity).userCounter)
         context?.apply {
             val hasPermission = (ContextCompat.checkSelfPermission(this,
                     Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)
@@ -185,6 +196,7 @@ class GraphFragment : BaseFragment<GraphContract.Presenter>(), GraphContract.Vie
                         REQUEST_WRITE_EXTERNAL_CODE)
             }
         }
+        Log.d("MyoApp saveCSV END", "Selected user: " + (activity as MainActivity).userCounter)
     }
 
     override fun showCollectedPoints(totalPoints: Int) {
