@@ -127,7 +127,7 @@ class GraphFragment : BaseFragment<GraphContract.Presenter>(), GraphContract.Vie
     }
 
     private fun  getUserFromFirebaseIndex(firebaseData: DatabaseReference, index: Int) {
-        firebaseData.child("subjects").addValueEventListener(object : ValueEventListener {
+        firebaseData.child("subjects").addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 for ((counter, areaSnapshot) in dataSnapshot.children.withIndex()) {
                     if(counter == index) {

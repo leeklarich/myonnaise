@@ -8,8 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.fragment.app.Fragment
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.*
 import dagger.android.support.AndroidSupportInjection
 import it.ncorti.emgvisualizer.BaseFragment
 import it.ncorti.emgvisualizer.R
@@ -17,10 +16,7 @@ import it.ncorti.emgvisualizer.R
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.layout_control_device.*
 import javax.inject.Inject
-import com.google.firebase.database.DatabaseError
 
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.ValueEventListener
 import it.ncorti.emgvisualizer.ui.MainActivity
 
 
@@ -48,7 +44,7 @@ class ControlDeviceFragment : BaseFragment<ControlDeviceContract.Presenter>(), C
     @Inject
     lateinit var controlDevicePresenter: ControlDevicePresenter
 
-    //private var selectedUser: Int? = 1
+    private var users = ArrayList<String>()
 
     override fun onAttach(context: Context?) {
         AndroidSupportInjection.inject(this)
@@ -99,11 +95,9 @@ class ControlDeviceFragment : BaseFragment<ControlDeviceContract.Presenter>(), C
             }
 
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                if(position != 0) {
-                    selectedUser = position
-                    loadSpecificUser(myRef, position)
-                    (activity as MainActivity).userCounter = position
-                }
+                selectedUser = position
+                loadSpecificUser(myRef, position)
+                (activity as MainActivity).userCounter = position
                 Log.d("MyoApp onItemSelected", "Selected user: " + position + "\nControlDeviceFrag Focus: " + view_pager?.currentItem)
             }
         }
@@ -194,37 +188,40 @@ class ControlDeviceFragment : BaseFragment<ControlDeviceContract.Presenter>(), C
 
 
     private fun loadUserSelection(firebaseData: DatabaseReference, counter: Int=0) {
-        firebaseData.child("subjects").addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
+        firebaseData.child("subjects").addChildEventListener(object : ChildEventListener {
+            override fun onChildAdded(dataSnapshot: DataSnapshot, prevChildKey: String?) {
                 // Is better to use a List, because you don't know the size
                 // of the iterator returned by dataSnapshot.getChildren() to
                 // initialize the array
-                val areas = ArrayList<String>()
+                //val areas = ArrayList<String>()
                 var counter = counter
-                for (areaSnapshot in dataSnapshot.children) {
-                    val areaName = areaSnapshot.child("name").getValue(String::class.java)
-                    areas.add(areaName!!)
-                    if(counter == 0) {
-                        edit_date.setText(areaSnapshot.child("enrollment_date").getValue(String::class.java))
-                        edit_handedness.setText(areaSnapshot.child("handedness").getValue(String::class.java))
-                        edit_injury.setText(areaSnapshot.child("injury").getValue(String::class.java))
-                        edit_comments.setText(areaSnapshot.child("comments").getValue(String::class.java))
-                        sessions_uploaded_number.text = areaSnapshot.child("sessions").getValue(String::class.java)
+                //for (areaSnapshot in dataSnapshot.children) {
+                    val areaName = dataSnapshot.child("name").getValue(String::class.java)
+                    if(areaName != null) {
+                        users.add(areaName)
+                        if (counter == 0) {
+                            edit_date.setText(dataSnapshot.child("enrollment_date").getValue(String::class.java))
+                            edit_handedness.setText(dataSnapshot.child("handedness").getValue(String::class.java))
+                            edit_injury.setText(dataSnapshot.child("injury").getValue(String::class.java))
+                            edit_comments.setText(dataSnapshot.child("comments").getValue(String::class.java))
+                            sessions_uploaded_number.text = dataSnapshot.child("sessions").getValue(String::class.java)
 
-                        counter++
+                            counter++
+                        }
                     }
-                }
+                //}
 
-                areas.sortWith(compareBy { it.removePrefix("Subject").toInt() })
+                users.sortWith(compareBy { it.removePrefix("Subject").toInt() })
                 val areaSpinner = select_name
-                val areasAdapter = ArrayAdapter(activity, android.R.layout.simple_spinner_item, areas)
+                val areasAdapter = ArrayAdapter(activity, android.R.layout.simple_spinner_item, users)
                 areasAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
                 areaSpinner.adapter = areasAdapter
             }
 
-            override fun onCancelled(databaseError: DatabaseError) {
-
-            }
+            override fun onChildChanged(p0: DataSnapshot, p1: String?) {}
+            override fun onChildMoved(p0: DataSnapshot, p1: String?) {}
+            override fun onChildRemoved(p0: DataSnapshot) {}
+            override fun onCancelled(databaseError: DatabaseError) {}
         })
     }
 
