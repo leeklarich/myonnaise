@@ -5,6 +5,7 @@ import android.content.Context
 import android.util.Log
 import io.reactivex.Flowable
 import io.reactivex.Observable
+import io.reactivex.exceptions.MissingBackpressureException
 import io.reactivex.processors.PublishProcessor
 import io.reactivex.subjects.BehaviorSubject
 import java.util.*
@@ -263,15 +264,26 @@ class Myo(private val device: BluetoothDevice) : BluetoothGattCallback() {
         super.onCharacteristicChanged(gatt, characteristic)
 
         if (characteristic.uuid.toString().endsWith(CHAR_EMG_POSTFIX)) {
-            val emgData = characteristic.value
+            var emgData = characteristic.value
             byteReader.byteData = emgData
 
             // Make sure there is enough data for a valid reading
-            if(emgData.size >= EMG_ARRAY_SIZE) {
+            /**if(emgData.size >= EMG_ARRAY_SIZE) {
+                //byteReader.byteData = emgData
                 // We receive 16 bytes of data. Let's cut them in 2 and deliver both of them.
-                dataProcessor.onNext(byteReader.getBytes(EMG_ARRAY_SIZE / 2))
-                dataProcessor.onNext(byteReader.getBytes(EMG_ARRAY_SIZE / 2))
+                dataProcessor.toSerialized().onNext(byteReader.getBytes(EMG_ARRAY_SIZE / 2))
+                dataProcessor.toSerialized().onNext(byteReader.getBytes(EMG_ARRAY_SIZE / 2))
+            }*/
+
+            while(!dataProcessor.offer(byteReader.getBytes(EMG_ARRAY_SIZE / 2))) {
+                emgData = characteristic.value
+                byteReader.byteData = emgData
             }
+            while(!dataProcessor.offer(byteReader.getBytes(EMG_ARRAY_SIZE / 2))) {
+                emgData = characteristic.value
+                byteReader.byteData = emgData
+            }
+
         }
 
         // Finally check if keep alive makes sense.
